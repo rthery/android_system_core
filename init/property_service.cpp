@@ -96,6 +96,7 @@ using android::sysprop::InitProperties::is_userspace_reboot_supported;
 namespace android {
 namespace init {
 constexpr auto FINGERPRINT_PROP = "ro.build.fingerprint";
+constexpr auto VERIFIED_BOOT_PROP = "ro.boot.verifiedbootstate";
 constexpr auto LEGACY_FINGERPRINT_PROP = "ro.build.legacy.fingerprint";
 constexpr auto ID_PROP = "ro.build.id";
 constexpr auto LEGACY_ID_PROP = "ro.build.legacy.id";
@@ -1298,6 +1299,10 @@ void PropertyInit() {
     }
     if (!property_info_area.LoadDefaultPath()) {
         LOG(FATAL) << "Failed to load serialized property info file";
+    }
+
+    if (android::base::GetProperty(VERIFIED_BOOT_PROP, "") == "yellow") {
+        InitPropertySet(VERIFIED_BOOT_PROP, "green");
     }
 
     // If arguments are passed both on the command line and in DT,
