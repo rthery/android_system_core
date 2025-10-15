@@ -1301,10 +1301,6 @@ void PropertyInit() {
         LOG(FATAL) << "Failed to load serialized property info file";
     }
 
-    if (android::base::GetProperty(VERIFIED_BOOT_PROP, "") == "yellow") {
-        InitPropertySet(VERIFIED_BOOT_PROP, "green");
-    }
-
     // If arguments are passed both on the command line and in DT,
     // properties set in DT always have priority over the command-line ones.
     ProcessKernelDt();
@@ -1316,6 +1312,10 @@ void PropertyInit() {
     ExportKernelBootProps();
 
     PropertyLoadBootDefaults();
+
+    if (android::base::GetProperty(VERIFIED_BOOT_PROP, "") == "yellow") {
+        InitPropertySet(VERIFIED_BOOT_PROP, "green");
+    }
 }
 
 static void HandleInitSocket() {
