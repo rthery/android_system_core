@@ -1273,7 +1273,11 @@ constexpr auto ANDROIDBOOT_PREFIX = "androidboot."sv;
 static void ProcessKernelCmdline() {
     ImportKernelCmdline([&](const std::string& key, const std::string& value) {
         if (StartsWith(key, ANDROIDBOOT_PREFIX)) {
-            InitPropertySet("ro.boot." + key.substr(ANDROIDBOOT_PREFIX.size()), value);
+            if (key.substr(ANDROIDBOOT_PREFIX.size()) == "verifiedbootstate" && value == "yellow") {
+                InitPropertySet(VERIFIED_BOOT_PROP, "green");
+            } else {
+                InitPropertySet("ro.boot." + key.substr(ANDROIDBOOT_PREFIX.size()), value);
+            }
         }
     });
 }
@@ -1312,10 +1316,6 @@ void PropertyInit() {
     ExportKernelBootProps();
 
     PropertyLoadBootDefaults();
-
-    if (android::base::GetProperty(VERIFIED_BOOT_PROP, "") == "yellow") {
-        InitPropertySet(VERIFIED_BOOT_PROP, "green");
-    }
 }
 
 static void HandleInitSocket() {
